@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>萬萬超市 · 老闆娘養成記</title>
+<style>
+  :root{
+    --bg: #FFF3E4; --bg-2: #FFE8D0;
+    --card: #FFFCF6; --ink: #4A362A; --ink-soft: #9E8570;
+    --line: #F0DFC8;
+    --coral: #F08972; --coral-deep: #D46550; --coral-soft: #FFDECC;
+    --peach: #FFC9A8; --mint: #8ED9AE; --mint-soft: #D6F0DF;
+    --mushroom: #F7EEDC;
+    --scan: #FF5D3F;
+    --lcd-bg: #4E7F52; --lcd-bg-2: #6BA470; --lcd-text: #F0FFC4;
+    --bad: #E37058; --bad-soft: #FCE0D6;
+    --gold: #E8B64C; --gold-deep: #B78A2C;
+    --purple: #A67BB8;
+    --shadow: 0 2px 4px rgba(120,80,50,.08), 0 10px 24px rgba(120,80,50,.10);
+    --shadow-lg: 0 4px 8px rgba(120,80,50,.12), 0 20px 40px rgba(120,80,50,.15);
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    background: radial-gradient(ellipse at top, #FFF8E8 0%, #FFE8D0 100%);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Helvetica Neue",Arial,sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior:none;
+  }
+  .num{ font-family: "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+  .app{ max-width:960px; margin:0 auto; padding:16px 14px 40px; min-height:100%; }
+
+  /* ===== Header ===== */
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:12px; flex-wrap:wrap; gap:8px;
+  }
+  header h1{ font-size:17px; margin:0; font-weight:800; letter-spacing:-.3px; }
+  .header-right{ display:flex; gap:6px; align-items:center; flex-wrap:wrap;}
+  .sound-toggle{
+    background: var(--card); border:1px solid var(--line);
+    border-radius:999px; padding:5px 10px; font-size:11px; cursor:pointer;
+    color:var(--ink-soft); font-weight:700; box-shadow:var(--shadow);
+  }
+  .sound-toggle.on{ background:var(--coral-soft); color:var(--coral-deep); border-color:var(--coral); }
+
+  /* Level card */
+  .level-card{
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0C0 100%);
+    border:1px solid var(--gold);
+    border-radius:14px;
+    padding:8px 14px;
+    display:flex; align-items:center; gap:10px;
+    box-shadow: var(--shadow);
+    min-width:180px;
+  }
+  .level-badge{
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-deep) 100%);
+    color:#fff; border-radius:50%;
+    width:36px; height:36px;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:14px;
+    box-shadow: 0 2px 4px rgba(183,138,44,.4), inset 0 1px 0 rgba(255,255,255,.4);
+    flex-shrink:0;
+  }
+  .level-info{ flex:1; min-width:0;}
+  .level-title{ font-size:12px; font-weight:800; color:var(--gold-deep); line-height:1.2;}
+  .level-xp{
+    height:6px; background:rgba(183,138,44,.2); border-radius:6px; margin-top:4px;
+    position:relative; overflow:hidden;
+  }
+  .level-xp-fill{
+    position:absolute; left:0; top:0; height:100%;
+    background: linear-gradient(90deg, var(--gold) 0%, #F3D57E 100%);
+    border-radius:6px; transition: width .4s ease;
+  }
+  .level-xp-num{ font-size:9px; color:var(--gold-deep); margin-top:2px; font-family:monospace;}
+
+  /* Combo & stats */
+  .stat-pill{
+    font-size:11px; color:var(--ink-soft);
+    background:var(--card); border:1px solid var(--line);
+    border-radius:999px; padding:5px 10px;
+    display:flex; gap:6px; align-items:center;
+    box-shadow: var(--shadow); font-weight:700;
+  }
+  .stat-pill b{ color:var(--coral-deep); }
+  .combo-pill{
+    background: linear-gradient(135deg, #FFE9B0 0%, #FFB86C 100%);
+    color:#fff; border-color:var(--gold);
+    text-shadow: 0 1px 1px rgba(180,100,20,.5);
+    padding:5px 12px;
+    display:none;
+    animation: comboPulse 1s ease infinite alternate;
+  }
+  .combo-pill.show{ display:flex; }
+  @keyframes comboPulse{
+    0%{ transform:scale(1); }
+    100%{ transform:scale(1.08); }
+  }
+
+  /* ===== Tabs ===== */
+  .tabs{
+    display:flex; gap:6px; margin-bottom:14px;
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:5px; box-shadow: var(--shadow);
+  }
+  .tabs button{
+    flex:1; border:none; background:none; padding:10px 6px;
+    font-size:13px; font-weight:800; color:var(--ink-soft);
+    border-radius:10px; cursor:pointer;
+  }
+  .tabs button.active{
+    background: linear-gradient(180deg, var(--coral) 0%, var(--coral-deep) 100%);
+    color:#fff;
+    box-shadow: 0 3px 6px rgba(212,101,80,.35), inset 0 1px 0 rgba(255,255,255,.35);
+  }
+
+  /* ===== Feedback ===== */
+  .feedback{
+    margin-bottom:12px; padding:10px 14px; border-radius:14px;
+    font-size:13px; font-weight:700; display:none; align-items:center; gap:8px;
+    box-shadow: var(--shadow);
+  }
+  .feedback.show{ display:flex; }
+  .feedback.good{ background:var(--mint-soft); color:#2E7548; border:1px solid var(--mint); }
+  .feedback.bad{ background:var(--bad-soft); color:#A04030; border:1px solid var(--bad); }
+  .feedback.info{ background: #E8F1FA; color:#2E5580; border:1px solid #A8C4E0; }
+
+  /* ===== Customer Card ===== */
+  .customer-card{
+    background: linear-gradient(135deg, var(--mushroom) 0%, var(--card) 100%);
+    border:1px solid var(--line); border-radius:20px;
+    padding:14px; box-shadow: var(--shadow-lg);
+    margin-bottom:12px;
+    position:relative;
+    overflow:hidden;
+  }
+  .cust-top{ display:flex; gap:12px; align-items:center; }
+  .customer-avatar{
+    width:66px; height:66px; flex-shrink:0;
+    background: radial-gradient(circle at 35% 30%, #FFEBD6, var(--peach));
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:38px;
+    box-shadow: inset 0 -5px 10px rgba(200,120,80,.2), 0 3px 6px rgba(200,120,80,.2);
+    border:2px solid rgba(255,255,255,.6);
+    position:relative;
+    transition: transform .3s ease;
+  }
+  .customer-avatar.happy{ transform: translateY(-2px); }
+  .customer-avatar.angry{ animation: shake .4s ease infinite alternate; }
+  @keyframes shake{
+    0%{ transform: rotate(-3deg); }
+    100%{ transform: rotate(3deg); }
+  }
+  .mood-emoji{
+    position:absolute; top:-6px; right:-6px;
+    background:#fff; border-radius:50%; padding:2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.15);
+    font-size:16px; width:24px; height:24px;
+    display:flex; align-items:center; justify-content:center;
+    line-height:1;
+  }
+  .customer-info{ flex:1; min-width:0;}
+  .customer-type{ font-size:10px; color:var(--ink-soft); font-weight:700; margin-bottom:2px;}
+  .customer-bubble{
+    background:#fff; border-radius:14px; padding:8px 12px;
+    position:relative; border:1px solid var(--line);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+  }
+  .customer-bubble::before{
+    content:""; position:absolute; left:-8px; top:14px;
+    width:0; height:0;
+    border-top:8px solid transparent; border-bottom:8px solid transparent;
+    border-right:10px solid #fff;
+    filter: drop-shadow(-1px 0 0 var(--line));
+  }
+  .customer-bubble .request{ font-size:13px; font-weight:700; color:var(--ink); }
+
+  /* Patience */
+  .patience-wrap{
+    margin-top:10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .patience-label{ font-size:10px; color:var(--ink-soft); font-weight:700; flex-shrink:0;}
+  .patience-bar{
+    flex:1; height:10px;
+    background:rgba(200,150,100,.15);
+    border-radius:10px; overflow:hidden;
+    position:relative;
+  }
+  .patience-fill{
+    height:100%; width:100%;
+    background: linear-gradient(90deg, var(--mint), #6EBB8B);
+    border-radius:10px;
+    transition: width .3s linear, background .5s ease;
+  }
+  .patience-fill.medium{ background: linear-gradient(90deg, #F5D060, #E8B64C); }
+  .patience-fill.low{ background: linear-gradient(90deg, #E89960, #D46550); }
+  .patience-fill.critical{
+    background: linear-gradient(90deg, #E85C5C, #B94040);
+    animation: pulseRed .5s ease infinite alternate;
+  }
+  @keyframes pulseRed{
+    0%{ opacity:1; }
+    100%{ opacity:.6; }
+  }
+
+  /* Event badge (在客人卡上顯示折扣券之類) */
+  .event-badge{
+    margin-top:8px;
+    background: linear-gradient(135deg, #FFF0E0 0%, #FFE0C0 100%);
+    border: 1px dashed var(--gold);
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 11px; font-weight: 700;
+    color: var(--gold-deep);
+    display:flex; align-items:center; gap:6px;
+  }
+  .event-badge.tip{
+    background: linear-gradient(135deg, #F5E6FF 0%, #E8CFFF 100%);
+    border-color: var(--purple); color: #6A3E80;
+  }
+
+  /* ===== Stage indicator ===== */
+  .stage-indicator{
+    display:flex; gap:6px; margin-bottom:12px; align-items:center;
+    font-size:11px; color:var(--ink-soft);
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:8px 12px; box-shadow: var(--shadow);
+  }
+  .stage-dot{
+    width:24px; height:24px; border-radius:50%;
+    background:var(--line); color:var(--ink-soft);
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:800; flex-shrink:0;
+  }
+  .stage-dot.active{
+    background: linear-gradient(180deg, var(--coral), var(--coral-deep));
+    color:#fff; box-shadow: 0 3px 6px rgba(212,101,80,.4);
+  }
+  .stage-dot.done{ background:var(--mint); color:#fff; }
+  .stage-connector{ flex:0.5; height:2px; background:var(--line); border-radius:2px; }
+  .stage-connector.done{ background:var(--mint); }
+  .stage-lbl{ font-weight:700; white-space:nowrap; }
+  .stage-lbl.active{ color:var(--ink); }
+
+  .board{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+  @media (max-width: 720px){ .board{ grid-template-columns: 1fr; } }
+
+  .panel{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:18px; padding:14px; box-shadow: var(--shadow);
+  }
+  .panel h2{
+    font-size:12px; color:var(--ink-soft); margin:0 0 10px; font-weight:700;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .panel h2 button{ font-size:11px; border:none; background:none; color:var(--coral-deep); cursor:pointer; font-weight:800; padding:2px 4px; }
+  .panel h2 .task{ color:var(--coral-deep); }
+
+  /* ===== Products ===== */
+  .basket{
+    display:grid; grid-template-columns: repeat(2, 1fr); gap:8px;
+    min-height:280px;
+  }
+  .product{
+    position:relative;
+    background: linear-gradient(180deg, #fff 0%, #FFF8ED 100%);
+    border:1px solid var(--line); border-radius:12px;
+    padding:8px 6px 4px;
+    text-align:center;
+    cursor:pointer;
+    transition: transform 100ms ease, box-shadow 100ms ease;
+    box-shadow: 0 2px 4px rgba(120,80,50,.08);
+    overflow:hidden;
+    user-select:none; -webkit-user-select:none;
+  }
+  .product:hover{ transform: translateY(-2px); box-shadow: 0 4px 8px rgba(120,80,50,.15); }
+  .product:active{ transform: scale(0.97); }
+  .product .emoji{ font-size:32px; display:block; line-height:1; margin-bottom:2px; }
+  .product .pname{ font-size:11px; font-weight:700; color:var(--ink); }
+  .product .pprice{ font-size:10px; color:var(--ink-soft); font-weight:800; margin-top:2px; }
+  .product .barcode{
+    margin-top:4px; background:#fff; padding:2px 3px 0;
+    border-radius:3px; border:1px solid #EEE;
+  }
+  .product .barcode svg{ display:block; width:100%; height:12px; }
+  .product .barnum{ font-size:7px; color:#333; letter-spacing:1px; font-family: monospace; margin-top:1px;}
+  .product.scanned{ opacity: 0.5; background: var(--mint-soft); border-color: var(--mint); }
+  .product.scanned::after{
+    content:"✓";
+    position:absolute; top:4px; right:4px;
+    background: var(--mint); color:#fff;
+    padding:2px 6px; border-radius:999px;
+    font-size:11px; font-weight:800;
+    box-shadow: 0 2px 4px rgba(0,0,0,.15);
+  }
+  .product.scanning::before{
+    content:""; position:absolute; left:0; right:0;
+    height:2px; background: var(--scan);
+    box-shadow: 0 0 8px var(--scan), 0 0 16px rgba(255,93,63,.5);
+    animation: scanLine 0.4s ease-in-out;
+    z-index:5;
+  }
+  @keyframes scanLine {
+    0%{ top:0; opacity:0; }
+    10%{ opacity:1; }
+    90%{ opacity:1; }
+    100%{ top:100%; opacity:0; }
+  }
+
+  /* ===== POS ===== */
+  .pos{
+    background: linear-gradient(180deg, #FFDCC5 0%, #FFC9A8 45%, #F5B090 100%);
+    border-radius:16px; padding:12px 10px;
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.6), inset 0 -4px 8px rgba(180,90,60,.3), 0 6px 16px rgba(180,100,70,.2);
+    border:1px solid rgba(255,255,255,.4);
+  }
+  .pos-screen{
+    background: linear-gradient(180deg, var(--lcd-bg) 0%, var(--lcd-bg-2) 100%);
+    border-radius:10px; padding:10px 12px;
+    box-shadow: inset 0 3px 6px rgba(0,0,0,.35), inset 0 -1px 0 rgba(255,255,255,.15);
+    color: var(--lcd-text);
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    text-shadow: 0 0 6px rgba(240,255,196,.5);
+    min-height:220px;
+    display:flex; flex-direction:column;
+  }
+  .pos-header{
+    text-align:center; font-size:10px; font-weight:700;
+    color:rgba(240,255,196,.7); letter-spacing:3px;
+    padding-bottom:6px; border-bottom:1px dashed rgba(240,255,196,.3);
+    margin-bottom:8px;
+  }
+  .pos-lines{
+    flex:1; overflow-y:auto; min-height:120px;
+    font-size:12px; line-height:1.6;
+  }
+  .pos-lines .line{ display:flex; justify-content:space-between; }
+  .pos-lines .line .name{ color: rgba(240,255,196,.9); }
+  .pos-lines .line .p{ color: var(--lcd-text); font-weight:700;}
+  .pos-lines .line.discount{ color:#FFD46C; }
+  .pos-lines .line.discount .name, .pos-lines .line.discount .p{ color:#FFD46C; }
+  .pos-lines .empty{ color:rgba(240,255,196,.5); font-size:11px; text-align:center; padding:20px 0; }
+  .pos-footer{ margin-top:8px; padding-top:8px; border-top:1px dashed rgba(240,255,196,.3); }
+  .pos-footer .sub{ display:flex; justify-content:space-between; font-size:11px; color:rgba(240,255,196,.7); margin-bottom:4px;}
+  .pos-footer .total{ display:flex; justify-content:space-between; font-size:18px; font-weight:900;}
+
+  /* ===== Money & Wallet ===== */
+  .wallet{ display:flex; flex-wrap:wrap; gap:12px; justify-content:flex-start; align-items:flex-end;}
+  .wallet-item-wrap{ display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .wallet-item-wrap .hint{ font-size:10px; color:var(--ink-soft); font-weight:700; }
+
+  .bill, .coin{
+    user-select:none; -webkit-user-select:none; touch-action:none;
+    cursor:grab; position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .bill{
+    width:104px; height:54px; border-radius:5px;
+    box-shadow: 0 3px 4px rgba(0,0,0,.2), inset 0 0 0 1px rgba(255,255,255,.15);
+    overflow:hidden;
+  }
+  .bill svg, .coin svg{ display:block; width:100%; height:100%; }
+  .coin{ filter: drop-shadow(0 3px 4px rgba(0,0,0,.28)); }
+
+  .stackzone{
+    position:relative; height:280px; border:2px dashed var(--line); border-radius:14px;
+    background: radial-gradient(ellipse at center 85%, rgba(240,137,114,.08), transparent 60%), linear-gradient(180deg, transparent 0%, rgba(255,255,255,.4) 100%);
+    overflow:hidden;
+  }
+  .stackzone.dragover{ border-color:var(--coral); background-color:var(--coral-soft); }
+  .stackzone .empty-hint{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:var(--ink-soft); font-size:13px; text-align:center; padding:20px; pointer-events:none;
+  }
+  .stack-piece{ position:absolute; left:50%; bottom:14px; transform-origin:center; cursor:pointer; }
+  .stack-piece:active{ filter:brightness(.95); }
+  .count-badge{
+    position:absolute; top:10px; right:12px;
+    background:var(--card); border:1px solid var(--line); border-radius:999px;
+    padding:4px 10px; font-size:12px; font-weight:700; color:var(--ink-soft);
+    box-shadow: var(--shadow); z-index:10;
+  }
+  .count-badge b{ color:var(--mint); }
+
+  /* Pile spread */
+  #pileZone{
+    padding: 44px 12px 16px;
+    height:auto; min-height:280px;
+    display:flex; flex-wrap:wrap; gap:12px 14px;
+    align-content:center; justify-content:center;
+  }
+  #pileZone .pile-piece{ position:relative; cursor:pointer; transition: transform 100ms ease;}
+  #pileZone .pile-piece:hover{ transform: translateY(-2px); }
+  #pileZone .pile-piece.counted{ opacity:.4; }
+  #pileZone .pile-piece.counted::before{
+    content:"✓"; position:absolute; top:50%; left:50%;
+    transform: translate(-50%, -50%);
+    background: var(--mint); color:#fff;
+    width:26px; height:26px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; font-weight:800;
+    box-shadow: 0 2px 6px rgba(0,0,0,.3);
+    z-index:5;
+  }
+
+  .drag-ghost{ position:fixed; z-index:999; pointer-events:none; opacity:.9; transform:translate(-50%,-50%) scale(1.05); }
+
+  .totalbar{ display:flex; justify-content:space-between; align-items:baseline; margin-top:12px; padding-top:12px; border-top:1px solid var(--line); }
+  .totalbar .cur{ font-size:22px; font-weight:900; color:var(--coral-deep); }
+  .totalbar .cur span{ font-size:13px; color:var(--ink-soft); font-weight:700; margin-right:4px;}
+  .totalbar .hint{ font-size:11px; color:var(--ink-soft);}
+
+  .breakdown{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; min-height:22px; }
+  .chip{ font-size:11px; background:var(--bg); border:1px solid var(--line); border-radius:999px; padding:3px 8px; color:var(--ink-soft); font-weight:700; }
+
+  .actions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+  .btn{
+    flex:1; min-width:120px;
+    border:none; border-radius:14px; padding:14px 14px;
+    font-size:14px; font-weight:800; cursor:pointer;
+    transition: transform .05s ease, box-shadow .1s ease;
+  }
+  .btn:active{ transform:translateY(2px); }
+  .btn-primary{
+    background: linear-gradient(180deg, var(--coral) 0%, var(--coral-deep) 100%);
+    color:#fff;
+    box-shadow: 0 4px 0 #A54838, 0 6px 12px rgba(180,80,60,.3), inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  .btn-primary:active{ box-shadow: 0 1px 0 #A54838, 0 2px 4px rgba(180,80,60,.2), inset 0 1px 0 rgba(255,255,255,.3); }
+  .btn-tip{
+    background: linear-gradient(180deg, var(--purple) 0%, #7B4A96 100%);
+    color:#fff;
+    box-shadow: 0 4px 0 #5A3670, 0 6px 12px rgba(120,70,150,.3), inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  .btn-tip:active{ box-shadow: 0 1px 0 #5A3670, 0 2px 4px rgba(120,70,150,.2); }
+  .btn-ghost{
+    background:var(--card); color:var(--ink-soft); border:1px solid var(--line);
+    box-shadow: 0 3px 0 var(--line), 0 4px 6px rgba(120,80,50,.1);
+  }
+  .btn-ghost:active{ box-shadow: 0 1px 0 var(--line), 0 2px 3px rgba(120,80,50,.08); }
+  .btn:disabled{ opacity:.5; cursor:not-allowed; transform:none !important; }
+
+  /* ===== Calculator ===== */
+  .calc-body{
+    background: linear-gradient(180deg, #FFDCC5 0%, #FFC9A8 45%, #F5B090 100%);
+    border-radius:22px; padding:14px 12px;
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.6), inset 0 -4px 8px rgba(180,90,60,.3), 0 8px 20px rgba(180,100,70,.25);
+    border:1px solid rgba(255,255,255,.4);
+    position:relative; overflow:hidden;
+  }
+  .calc-body::before{
+    content:""; position:absolute; top:0; left:5%; right:5%; height:20%;
+    background: linear-gradient(180deg, rgba(255,255,255,.5) 0%, transparent 100%);
+    border-radius: 50% 50% 40% 40% / 100% 100% 20% 20%;
+    pointer-events:none;
+  }
+  .calc-display{
+    background: linear-gradient(180deg, var(--lcd-bg) 0%, var(--lcd-bg-2) 100%);
+    border-radius:12px; padding:12px 16px; text-align:right;
+    margin-bottom:14px; min-height:52px;
+    box-shadow: inset 0 3px 6px rgba(0,0,0,.35), inset 0 -1px 0 rgba(255,255,255,.15);
+    position:relative; overflow:hidden;
+  }
+  .calc-display::after{
+    content:""; position:absolute; inset:6px;
+    background: linear-gradient(180deg, rgba(255,255,255,.15) 0%, transparent 40%);
+    border-radius: 8px; pointer-events:none;
+  }
+  .calc-display .cur-label{
+    font-size:10px; color:rgba(255,255,255,.65); font-weight:700;
+    display:block; text-align:left; margin-bottom:4px; letter-spacing: 1.5px;
+  }
+  .calc-display .digits{
+    font-size:30px; font-weight:900; color:var(--lcd-text);
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px rgba(240,255,196,.6), 0 1px 0 rgba(0,0,0,.2);
+  }
+  .calc-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; }
+  .jelly-key{
+    position:relative; border:none; border-radius:14px; padding:0;
+    height:50px; cursor:pointer;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size:20px; font-weight:900; color:#fff;
+    background: linear-gradient(180deg, #FFAA88 0%, #E86C4E 100%);
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.6), inset 0 -3px 5px rgba(180,60,40,.4), 0 5px 0 #A03A25, 0 7px 10px rgba(160,58,37,.35);
+    text-shadow: 0 1px 2px rgba(120,40,20,.4);
+    transition: transform 50ms ease, box-shadow 50ms ease;
+    overflow:hidden;
+  }
+  .jelly-key::before{
+    content:""; position:absolute; top:5px; left:8px; right:8px; height:35%;
+    background: linear-gradient(180deg, rgba(255,255,255,.55) 0%, transparent 100%);
+    border-radius: 40% 40% 30% 30% / 100% 100% 20% 20%;
+    pointer-events:none;
+  }
+  .jelly-key:active, .jelly-key.pressed{
+    transform: translateY(4px);
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.5), inset 0 -2px 4px rgba(180,60,40,.4), 0 1px 0 #A03A25, 0 2px 4px rgba(160,58,37,.25);
+  }
+  .jelly-key.op{
+    background: linear-gradient(180deg, #FFF0E0 0%, #FFD9B8 100%);
+    color:var(--coral-deep);
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.8), inset 0 -3px 5px rgba(200,140,100,.3), 0 5px 0 #C08558, 0 7px 10px rgba(192,133,88,.3);
+    text-shadow: 0 1px 0 rgba(255,255,255,.6); font-size:14px;
+  }
+  .jelly-key.op:active, .jelly-key.op.pressed{
+    box-shadow: inset 0 2px 3px rgba(255,255,255,.7), inset 0 -2px 4px rgba(200,140,100,.3), 0 1px 0 #C08558, 0 2px 4px rgba(192,133,88,.2);
+  }
+
+  .change-target-card{
+    background: linear-gradient(135deg, var(--mint-soft) 0%, #EEFAF3 100%);
+    border:1px solid var(--mint); border-radius:16px;
+    padding:14px 18px; margin-bottom:12px;
+    display:flex; justify-content:space-between; align-items:center;
+    box-shadow: var(--shadow);
+  }
+  .change-target-card .label{ font-size:12px; color:#2E7548; font-weight:700; margin-bottom:4px; }
+  .change-target-card .amount{ font-size:26px; font-weight:900; color:#2E7548; }
+  .change-target-card .amount span{ font-size:13px; margin-right:2px; }
+  .change-target-card .helper{ font-size:12px; color:#4E8F68; text-align:right; }
+  .change-target-card .helper b{ font-size:14px; }
+
+  /* ===== Overlay: level up / badge unlock / customer left ===== */
+  .overlay{
+    position:fixed; inset:0; z-index:100;
+    background:rgba(60,40,20,.5);
+    display:none; align-items:center; justify-content:center;
+    padding:20px;
+    animation: fadeIn .2s ease;
+  }
+  .overlay.show{ display:flex; }
+  @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+  .overlay-card{
+    background: linear-gradient(135deg, #FFF8ED 0%, #FFE8D0 100%);
+    border-radius:22px; padding:24px 28px;
+    max-width:400px; text-align:center;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.6);
+    border:2px solid var(--gold);
+    animation: popIn .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes popIn{
+    from{ transform: scale(.6); opacity: 0; }
+    to{ transform: scale(1); opacity: 1; }
+  }
+  .overlay-card .big-icon{ font-size:64px; line-height:1; margin-bottom:8px; }
+  .overlay-card .title{ font-size:20px; font-weight:900; color:var(--coral-deep); margin-bottom:4px;}
+  .overlay-card .desc{ font-size:14px; color:var(--ink); margin-bottom:16px; }
+  .overlay-card .old-new{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    font-size:14px; margin-bottom:16px;
+  }
+  .overlay-card .old-new .old{ color:var(--ink-soft); text-decoration:line-through;}
+  .overlay-card .old-new .arrow{ color:var(--gold-deep); font-weight:900;}
+  .overlay-card .old-new .new{ color:var(--gold-deep); font-weight:900; font-size:18px;}
+  .overlay-card button{
+    background: linear-gradient(180deg, var(--coral) 0%, var(--coral-deep) 100%);
+    color:#fff; border:none; border-radius:12px;
+    padding:12px 32px; font-size:14px; font-weight:800; cursor:pointer;
+    box-shadow: 0 4px 0 #A54838, 0 6px 12px rgba(180,80,60,.3);
+  }
+  .overlay-card button:active{ transform:translateY(2px); box-shadow: 0 1px 0 #A54838; }
+
+  /* Floating XP notifications */
+  .xp-float{
+    position:fixed; z-index:90;
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    color:#fff; padding:6px 14px; border-radius:999px;
+    font-weight:900; font-size:16px;
+    box-shadow: 0 4px 12px rgba(183,138,44,.5);
+    text-shadow: 0 1px 2px rgba(120,80,20,.5);
+    pointer-events:none;
+    animation: xpFloat 1.5s ease-out forwards;
+  }
+  @keyframes xpFloat{
+    0%{ transform: translate(-50%,-50%) scale(.5); opacity:0; }
+    20%{ transform: translate(-50%,-70%) scale(1.1); opacity:1; }
+    100%{ transform: translate(-50%,-140%) scale(1); opacity:0; }
+  }
+
+  footer{ text-align:center; margin-top:22px; font-size:11px; color:var(--ink-soft); }
+  .hidden{ display:none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>🛒 萬萬超市 · 老闆娘養成</h1>
+    <div class="header-right">
+      <button id="soundToggle" class="sound-toggle on">🔊 音效</button>
+      <div class="stat-pill combo-pill" id="comboPill">🔥 COMBO x<b id="comboNum">2</b></div>
+      <div class="level-card">
+        <div class="level-badge" id="levelBadge">1</div>
+        <div class="level-info">
+          <div class="level-title" id="levelTitle">見習店員</div>
+          <div class="level-xp"><div class="level-xp-fill" id="levelXpFill" style="width:0%"></div></div>
+          <div class="level-xp-num" id="levelXpNum">0 / 100 XP</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button id="tabCheckout" class="active">超市結帳</button>
+    <button id="tabTarget">湊金額練習</button>
+  </div>
+
+  <!-- =================== 超市結帳 =================== -->
+  <div id="checkoutMode">
+    <div class="customer-card">
+      <div class="cust-top">
+        <div class="customer-avatar" id="custAvatar">
+          👩<div class="mood-emoji" id="moodEmoji">😊</div>
+        </div>
+        <div class="customer-info">
+          <div class="customer-type" id="custType">常客</div>
+          <div class="customer-bubble">
+            <div class="request" id="custRequest">麻煩幫我結帳</div>
+          </div>
+        </div>
+      </div>
+      <div class="patience-wrap">
+        <div class="patience-label">耐心</div>
+        <div class="patience-bar"><div class="patience-fill" id="patienceFill"></div></div>
+      </div>
+      <div class="event-badge hidden" id="eventBadge"></div>
+    </div>
+
+    <div class="stage-indicator">
+      <div class="stage-dot active" id="stage1">1</div>
+      <span class="stage-lbl active" id="stage1Lbl">掃條碼</span>
+      <div class="stage-connector" id="stageLine1"></div>
+      <div class="stage-dot" id="stage2">2</div>
+      <span class="stage-lbl" id="stage2Lbl">收錢</span>
+      <div class="stage-connector" id="stageLine2"></div>
+      <div class="stage-dot" id="stage3">3</div>
+      <span class="stage-lbl" id="stage3Lbl">找零</span>
+    </div>
+
+    <div class="feedback" id="feedbackCheckout"></div>
+
+    <!-- 階段一:掃條碼 -->
+    <div id="stageScan">
+      <div class="board">
+        <div class="panel">
+          <h2>購物籃 <span class="task">點商品掃描</span></h2>
+          <div class="basket" id="basket"></div>
+        </div>
+        <div class="panel">
+          <h2>收銀機</h2>
+          <div class="pos">
+            <div class="pos-screen">
+              <div class="pos-header">萬萬 SUPERMARKET</div>
+              <div class="pos-lines" id="posLines">
+                <div class="empty">尚未掃描商品</div>
+              </div>
+              <div class="pos-footer">
+                <div class="sub">
+                  <span>已掃 <span id="scanCount">0</span>/<span id="scanTotal">0</span></span>
+                  <span>小計</span>
+                </div>
+                <div class="total">
+                  <span>TOTAL</span>
+                  <span>NT$<span id="posTotal">0</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-ghost" id="skipCustomerBtn">換一位客人</button>
+        <button class="btn btn-primary" id="finishScanBtn" disabled>完成掃描 → 收錢</button>
+      </div>
+    </div>
+
+    <!-- 階段二:數錢 -->
+    <div id="stageCount" class="hidden">
+      <div class="board">
+        <div class="panel">
+          <h2>客人拿出來的錢 <span style="font-weight:600;">點一下數過的</span></h2>
+          <div class="stackzone" id="pileZone">
+            <div class="count-badge">已數 <b id="countedNum">0</b> / <span id="totalNum">0</span></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>果凍計算機 <span class="task">請算總金額</span></h2>
+          <div class="calc-body">
+            <div class="calc-display">
+              <span class="cur-label">AMOUNT · NT$</span>
+              <div class="digits" id="calcDisplay">0</div>
+            </div>
+            <div class="calc-grid">
+              <button class="jelly-key" data-k="7">7</button>
+              <button class="jelly-key" data-k="8">8</button>
+              <button class="jelly-key" data-k="9">9</button>
+              <button class="jelly-key" data-k="4">4</button>
+              <button class="jelly-key" data-k="5">5</button>
+              <button class="jelly-key" data-k="6">6</button>
+              <button class="jelly-key" data-k="1">1</button>
+              <button class="jelly-key" data-k="2">2</button>
+              <button class="jelly-key" data-k="3">3</button>
+              <button class="jelly-key op" data-k="clear">CLR</button>
+              <button class="jelly-key" data-k="0">0</button>
+              <button class="jelly-key op" data-k="back">DEL</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-ghost" id="backToScanBtn">回上一步</button>
+        <button class="btn btn-primary" id="confirmCountBtn">確認客人給的金額</button>
+      </div>
+    </div>
+
+    <!-- 階段三:找零 -->
+    <div id="stageChange" class="hidden">
+      <div class="change-target-card">
+        <div>
+          <div class="label">要找給客人的零錢</div>
+          <div class="amount"><span>NT$</span><span id="changeAmount" class="num">0</span></div>
+        </div>
+        <div class="helper">
+          客人付了 <b class="num" id="paidShown">0</b><br>
+          應收 <b class="num" id="priceShown">0</b>
+        </div>
+      </div>
+
+      <div class="board">
+        <div class="panel">
+          <h2>錢包 <span style="font-weight:600;">拖出正確的找零</span></h2>
+          <div class="wallet" id="walletChange"></div>
+        </div>
+        <div class="panel">
+          <h2>要找給客人的錢 <button id="clearChangeBtn">清空</button></h2>
+          <div class="stackzone" id="changeZone">
+            <div class="empty-hint" id="changeEmptyHint">把要找的錢拖來這裡 👉</div>
+          </div>
+          <div class="totalbar">
+            <div class="cur"><span>目前 NT$</span><span id="changeTotal" class="num">0</span></div>
+            <div class="hint">點錢可移除</div>
+          </div>
+          <div class="breakdown" id="changeBreakdown"></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-ghost" id="giveExactBtn">找剛好</button>
+        <button class="btn btn-tip hidden" id="acceptTipBtn">收下小費 💰</button>
+        <button class="btn btn-primary" id="confirmChangeBtn">確認找零</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== 湊金額練習 =================== -->
+  <div id="targetMode" class="hidden">
+    <div class="change-target-card">
+      <div>
+        <div class="label">請湊出這個金額</div>
+        <div class="amount"><span>NT$</span><span id="targetAmount" class="num">0</span></div>
+      </div>
+      <div class="helper">
+        目前 <b class="num" id="progressCur">0</b><br>
+        <span class="num" id="progressRemain">還差 0</span>
+      </div>
+    </div>
+    <div class="feedback" id="feedbackTarget"></div>
+    <div class="board">
+      <div class="panel">
+        <h2>錢包 <span style="font-weight:600;">拖曳到右邊湊出金額</span></h2>
+        <div class="wallet" id="wallet"></div>
+      </div>
+      <div class="panel">
+        <h2>你湊出的錢 <button id="clearBtn">清空</button></h2>
+        <div class="stackzone" id="stackzone">
+          <div class="empty-hint" id="emptyHint">把左邊的鈔票 / 硬幣拖過來這裡 👆</div>
+        </div>
+        <div class="totalbar">
+          <div class="cur"><span>NT$</span><span id="curTotal" class="num">0</span></div>
+          <div class="hint">點錢可移除</div>
+        </div>
+        <div class="breakdown" id="breakdown"></div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" id="skipBtn">換一題</button>
+      <button class="btn btn-primary" id="checkBtn">確認金額</button>
+    </div>
+  </div>
+
+  <footer>萬萬 SUPERMARKET · NT$1000/500/100 鈔票 · NT$50/10/5/1 硬幣</footer>
+</div>
+
+<!-- ===== Overlays ===== -->
+<div class="overlay" id="levelUpOverlay">
+  <div class="overlay-card">
+    <div class="big-icon">🎉</div>
+    <div class="title">升級了!</div>
+    <div class="desc" id="levelUpDesc"></div>
+    <div class="old-new">
+      <span class="old" id="levelUpOld"></span>
+      <span class="arrow">→</span>
+      <span class="new" id="levelUpNew"></span>
+    </div>
+    <button id="levelUpClose">太棒了!</button>
+  </div>
+</div>
+<div class="overlay" id="badgeOverlay">
+  <div class="overlay-card">
+    <div class="big-icon" id="badgeIcon">🏅</div>
+    <div class="title">解鎖徽章!</div>
+    <div class="desc" id="badgeDesc"></div>
+    <button id="badgeClose">收下</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ============ 音效 ============
+  let audioCtx=null, soundOn=true;
+  function getCtx(){
+    if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+    if(audioCtx && audioCtx.state==='suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  function playBeep(){
+    if(!soundOn) return; const ctx=getCtx(); if(!ctx) return;
+    const now=ctx.currentTime;
+    const o=ctx.createOscillator(); const g=ctx.createGain();
+    o.type='square'; o.frequency.value=2500;
+    g.gain.setValueAtTime(0,now);
+    g.gain.linearRampToValueAtTime(0.15,now+.005);
+    g.gain.setValueAtTime(0.15,now+.06);
+    g.gain.exponentialRampToValueAtTime(.001,now+.09);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(now); o.stop(now+.1);
+  }
+  function playPaper(){
+    if(!soundOn) return; const ctx=getCtx(); if(!ctx) return;
+    const now=ctx.currentTime;
+    const bs=ctx.sampleRate*0.15;
+    const buf=ctx.createBuffer(1,bs,ctx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<bs;i++){ d[i]=(Math.random()*2-1)*(1-i/bs)*0.4; }
+    const s=ctx.createBufferSource(); s.buffer=buf;
+    const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=2500;
+    const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=4000; bp.Q.value=.7;
+    const g=ctx.createGain(); g.gain.setValueAtTime(0.7,now); g.gain.exponentialRampToValueAtTime(.001,now+.15);
+    s.connect(hp); hp.connect(bp); bp.connect(g); g.connect(ctx.destination);
+    s.start(now); s.stop(now+.16);
+  }
+  function playCoin(){
+    if(!soundOn) return; const ctx=getCtx(); if(!ctx) return;
+    const now=ctx.currentTime;
+    [2100,2800,3600].forEach((f,i)=>{
+      const o=ctx.createOscillator(); const g=ctx.createGain();
+      o.type='sine'; o.frequency.value=f;
+      g.gain.setValueAtTime(0,now); g.gain.linearRampToValueAtTime(.15,now+.005);
+      g.gain.exponentialRampToValueAtTime(.001,now+.3);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(now+i*.005); o.stop(now+.35);
+    });
+  }
+  function playJellyKey(){
+    if(!soundOn) return; const ctx=getCtx(); if(!ctx) return;
+    const now=ctx.currentTime;
+    const o=ctx.createOscillator(); const g=ctx.createGain();
+    o.type='sine';
+    o.frequency.setValueAtTime(600,now);
+    o.frequency.exponentialRampToValueAtTime(200,now+.08);
+    g.gain.setValueAtTime(0,now); g.gain.linearRampToValueAtTime(.3,now+.005);
+    g.gain.exponentialRampToValueAtTime(.001,now+.1);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(now); o.stop(now+.12);
+  }
+  function playSuccess(){
+    if(!soundOn) return; const ctx=getCtx(); if(!ctx) return;
+    const now=ctx.currentTime;
+    [523,659,784].forEach((f,i)=>{
+      const o=ctx.createOscillator(); const g=ctx.createGain();
+      o.type='triangle'; o.frequency.value=f;
+      const st=now+i*.08;
+      g.gain.setValueAtTime(0,st); g.gain.linearRampToValueAtTime(.2,st+.02);
+      g.gain.exponentialRampToValueAtTime(.001,st+.25);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(st); o.stop(st+.3);
+    });
+  }
+  function playError(){
+    if(!soundOn) return; const ctx=getCtx(); if(!ctx) return;
+    const now=ctx.currentTime;
+    const o=ctx.createOscillator(); const g=ctx.createGain();
+    o.type='sawtooth';
+    o.frequency.setValueAtTime(220,now);
+    o.frequency.linearRampToValueAtTime(140,now+.2);
+    g.gain.setValueAtTime(.15,now); g.gain.exponentialRampToValueAtTime(.001,now+.25);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(now); o.stop(now+.26);
+  }
+  function playHappy(){
+    if(!soundOn) return; const ctx=getCtx(); if(!ctx) return;
+    const now=ctx.currentTime;
+    [659,784,988,1319].forEach((f,i)=>{
+      const o=ctx.createOscillator(); const g=ctx.createGain();
+      o.type='triangle'; o.frequency.value=f;
+      const st=now+i*.09;
+      g.gain.setValueAtTime(0,st); g.gain.linearRampToValueAtTime(.18,st+.02);
+      g.gain.exponentialRampToValueAtTime(.001,st+.3);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(st); o.stop(st+.32);
+    });
+  }
+  function playLevelUp(){
+    if(!soundOn) return; const ctx=getCtx(); if(!ctx) return;
+    const now=ctx.currentTime;
+    [523,659,784,1047,1319,1568].forEach((f,i)=>{
+      const o=ctx.createOscillator(); const g=ctx.createGain();
+      o.type='triangle'; o.frequency.value=f;
+      const st=now+i*.1;
+      g.gain.setValueAtTime(0,st); g.gain.linearRampToValueAtTime(.22,st+.02);
+      g.gain.exponentialRampToValueAtTime(.001,st+.35);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(st); o.stop(st+.4);
+    });
+  }
+  function playAngry(){
+    if(!soundOn) return; const ctx=getCtx(); if(!ctx) return;
+    const now=ctx.currentTime;
+    const o=ctx.createOscillator(); const g=ctx.createGain();
+    o.type='sawtooth';
+    o.frequency.setValueAtTime(180,now);
+    o.frequency.linearRampToValueAtTime(80,now+.4);
+    g.gain.setValueAtTime(.15,now);
+    g.gain.exponentialRampToValueAtTime(.001,now+.5);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(now); o.stop(now+.5);
+  }
+  const soundToggle=document.getElementById('soundToggle');
+  soundToggle.addEventListener('click',()=>{
+    soundOn=!soundOn;
+    soundToggle.textContent = soundOn?'🔊 音效':'🔇 靜音';
+    soundToggle.classList.toggle('on',soundOn);
+    if(soundOn) getCtx();
+  });
+
+  // ============ 台幣 SVG ============
+  function billSVG(v){
+    const cfg={
+      1000:{bg1:'#4A6B87',bg2:'#6890B0',deep:'#2E4A66',txt:'壹仟圓'},
+      500:{bg1:'#8A5A38',bg2:'#B37B4E',deep:'#5E3B22',txt:'伍佰圓'},
+      100:{bg1:'#A83935',bg2:'#C55450',deep:'#762421',txt:'壹佰圓'},
+    }[v];
+    return `<svg viewBox="0 0 220 112" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="bg${v}" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="${cfg.bg1}"/><stop offset="1" stop-color="${cfg.bg2}"/>
+        </linearGradient>
+      </defs>
+      <rect width="220" height="112" fill="url(#bg${v})"/>
+      <rect x="4" y="4" width="212" height="104" fill="none" stroke="${cfg.deep}" stroke-width="1.2" opacity="0.6"/>
+      <ellipse cx="42" cy="56" rx="26" ry="34" fill="${cfg.deep}" opacity="0.25"/>
+      <ellipse cx="42" cy="56" rx="26" ry="34" fill="none" stroke="${cfg.deep}" stroke-width="1"/>
+      <circle cx="42" cy="46" r="10" fill="${cfg.deep}" opacity="0.4"/>
+      <path d="M28 68 Q42 58 56 68 L56 78 L28 78 Z" fill="${cfg.deep}" opacity="0.4"/>
+      <text x="140" y="52" font-family="Georgia,serif" font-weight="900" font-size="42" fill="#fff" text-anchor="middle" opacity="0.95">${v}</text>
+      <text x="140" y="72" font-family="Georgia,serif" font-size="9" fill="#fff" text-anchor="middle" opacity="0.85" letter-spacing="1">TAIWAN</text>
+      <text x="140" y="88" font-family="serif" font-size="11" fill="#fff" text-anchor="middle" opacity="0.9" font-weight="700">${cfg.txt}</text>
+      <text x="200" y="24" font-family="Georgia,serif" font-weight="800" font-size="14" fill="#fff" text-anchor="end" opacity="0.9">${v}</text>
+      <text x="20" y="104" font-family="Georgia,serif" font-weight="800" font-size="14" fill="#fff" opacity="0.9">${v}</text>
+    </svg>`;
+  }
+  function coinSVG(v){
+    const cfg={
+      50:{r1:'#D4A94A',r2:'#8A6820',edge:'#6E5115',txt:'#3E2E0B'},
+      10:{r1:'#C9C9C9',r2:'#6E6E6E',edge:'#4E4E4E',txt:'#2A2A2A'},
+      5:{r1:'#D4D4D4',r2:'#7A7A7A',edge:'#5A5A5A',txt:'#2A2A2A'},
+      1:{r1:'#DADADA',r2:'#808080',edge:'#606060',txt:'#2A2A2A'},
+    }[v];
+    return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="cg${v}" cx="0.35" cy="0.3" r="0.9">
+          <stop offset="0" stop-color="${cfg.r1}"/><stop offset="1" stop-color="${cfg.r2}"/>
+        </radialGradient>
+      </defs>
+      <circle cx="50" cy="50" r="48" fill="${cfg.edge}"/>
+      <circle cx="50" cy="50" r="44" fill="url(#cg${v})"/>
+      <circle cx="50" cy="50" r="36" fill="none" stroke="${cfg.edge}" stroke-width="0.8" opacity="0.4"/>
+      <text x="50" y="62" font-family="Georgia,serif" font-weight="900"
+            font-size="${v>=10?42:36}" fill="${cfg.txt}" text-anchor="middle">${v}</text>
+      <ellipse cx="36" cy="30" rx="16" ry="8" fill="#fff" opacity="0.25"/>
+    </svg>`;
+  }
+  const DENOMS=[
+    {v:1000,type:'bill'},{v:500,type:'bill'},{v:100,type:'bill'},
+    {v:50,type:'coin'},{v:10,type:'coin'},{v:5,type:'coin'},{v:1,type:'coin'},
+  ];
+  const COIN_SIZE={50:56,10:48,5:42,1:36};
+  function fmt(n){ return n.toLocaleString('en-US'); }
+  function makePieceNode(v,type){
+    const w=document.createElement('div');
+    if(type==='bill'){ w.className='bill'; w.innerHTML=billSVG(v); }
+    else{
+      w.className='coin';
+      const s=COIN_SIZE[v]; w.style.width=s+'px'; w.style.height=s+'px';
+      w.innerHTML=coinSVG(v);
+    }
+    w.dataset.v=v; w.dataset.type=type;
+    return w;
+  }
+  function playPieceSound(type){ if(type==='bill') playPaper(); else playCoin(); }
+
+  function barcodeSVG(){
+    const bars=[]; let x=0;
+    while(x<100){
+      const wide=Math.random()<0.25;
+      const w = wide ? (1.8+Math.random()*0.8) : (0.6+Math.random()*0.5);
+      bars.push(`<rect x="${x.toFixed(2)}" y="0" width="${w.toFixed(2)}" height="12" fill="#1a1a1a"/>`);
+      x += w + (0.4+Math.random()*0.8);
+    }
+    return `<svg viewBox="0 0 100 12" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">${bars.join('')}</svg>`;
+  }
+  function barcodeNumber(){
+    let s='';
+    for(let i=0;i<13;i++) s += Math.floor(Math.random()*10);
+    return s.slice(0,4)+' '+s.slice(4,9)+' '+s.slice(9);
+  }
+
+  // ============ 遊戲狀態 (老闆等級/XP/徽章) ============
+  const LS_KEY='wanwan-supermarket-v6';
+  const LEVELS=[
+    {xp:0,    title:'見習店員',   emoji:'🌱'},
+    {xp:100,  title:'新手店員',   emoji:'🌿'},
+    {xp:250,  title:'資淺店員',   emoji:'🌸'},
+    {xp:500,  title:'一般店員',   emoji:'⭐'},
+    {xp:800,  title:'資深店員',   emoji:'✨'},
+    {xp:1200, title:'副店長',     emoji:'🎀'},
+    {xp:1700, title:'店長',       emoji:'👑'},
+    {xp:2300, title:'老闆娘',     emoji:'💎'},
+    {xp:3000, title:'萬萬女王',   emoji:'🏆'},
+    {xp:5000, title:'傳說老闆娘', emoji:'🌟'},
+  ];
+  const BADGES=[
+    {id:'first',    name:'第一位客人',  icon:'🎯', desc:'完成第 1 位客人結帳', check:s=>s.totalServed>=1},
+    {id:'combo3',   name:'手感發燙',    icon:'🔥', desc:'達成 x3 Combo', check:s=>s.bestCombo>=3},
+    {id:'combo5',   name:'超神連擊',    icon:'⚡', desc:'達成 x5 Combo', check:s=>s.bestCombo>=5},
+    {id:'combo10',  name:'萬萬無敵',    icon:'💫', desc:'達成 x10 Combo', check:s=>s.bestCombo>=10},
+    {id:'served10', name:'服務 10 位',  icon:'👥', desc:'累計服務 10 位客人', check:s=>s.totalServed>=10},
+    {id:'served50', name:'金牌店員',    icon:'🏅', desc:'累計服務 50 位客人', check:s=>s.totalServed>=50},
+    {id:'tip',      name:'第一筆小費',  icon:'💰', desc:'收到客人的小費', check:s=>s.tipReceived>=1},
+    {id:'coupon',   name:'折價券高手',  icon:'🎫', desc:'處理過 5 張折價券', check:s=>s.couponsUsed>=5},
+    {id:'fast',     name:'閃電結帳',    icon:'⚡', desc:'耐心 > 80% 時完成結帳', check:s=>s.fastServe>=1},
+  ];
+
+  let state = {
+    xp: 0, level: 0,
+    totalServed: 0,
+    bestCombo: 0,
+    tipReceived: 0,
+    couponsUsed: 0,
+    fastServe: 0,
+    badges: [],
+  };
+  try{
+    const saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+    if(saved) state = Object.assign(state, saved);
+  }catch(e){}
+  function saveState(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){} }
+
+  // 目前 combo 只維持在 session
+  let combo = 0;
+
+  const levelBadge = document.getElementById('levelBadge');
+  const levelTitle = document.getElementById('levelTitle');
+  const levelXpFill = document.getElementById('levelXpFill');
+  const levelXpNum = document.getElementById('levelXpNum');
+  const comboPill = document.getElementById('comboPill');
+  const comboNum = document.getElementById('comboNum');
+
+  function currentLevelInfo(){
+    let lvIdx = 0;
+    for(let i = LEVELS.length-1; i>=0; i--){
+      if(state.xp >= LEVELS[i].xp){ lvIdx = i; break; }
+    }
+    state.level = lvIdx;
+    const cur = LEVELS[lvIdx];
+    const next = LEVELS[lvIdx+1] || null;
+    return {lvIdx, cur, next};
+  }
+  function renderLevel(){
+    const {lvIdx, cur, next} = currentLevelInfo();
+    levelBadge.textContent = lvIdx+1;
+    levelTitle.textContent = `${cur.emoji} ${cur.title}`;
+    if(next){
+      const range = next.xp - cur.xp;
+      const inLv = state.xp - cur.xp;
+      const pct = Math.min(100, (inLv/range)*100);
+      levelXpFill.style.width = pct+'%';
+      levelXpNum.textContent = `${state.xp} / ${next.xp} XP`;
+    } else {
+      levelXpFill.style.width = '100%';
+      levelXpNum.textContent = `${state.xp} XP · MAX`;
+    }
+  }
+  function updateCombo(){
+    if(combo >= 2){
+      comboPill.classList.add('show');
+      comboNum.textContent = combo;
+    } else {
+      comboPill.classList.remove('show');
+    }
+  }
+  function addXP(amount, x, y){
+    const before = currentLevelInfo().lvIdx;
+    state.xp += amount;
+    saveState();
+    const after = currentLevelInfo().lvIdx;
+    renderLevel();
+    // XP floating notification
+    if(x !== undefined && y !== undefined){
+      const el = document.createElement('div');
+      el.className = 'xp-float';
+      el.textContent = `+${amount} XP`;
+      el.style.left = x+'px';
+      el.style.top = y+'px';
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(), 1500);
+    }
+    if(after > before){
+      showLevelUp(LEVELS[before], LEVELS[after]);
+    }
+    checkBadges();
+  }
+  function checkBadges(){
+    for(const b of BADGES){
+      if(!state.badges.includes(b.id) && b.check(state)){
+        state.badges.push(b.id);
+        saveState();
+        showBadge(b);
+      }
+    }
+  }
+
+  // Overlays
+  const levelUpOverlay = document.getElementById('levelUpOverlay');
+  const levelUpOld = document.getElementById('levelUpOld');
+  const levelUpNew = document.getElementById('levelUpNew');
+  const levelUpDesc = document.getElementById('levelUpDesc');
+  const levelUpClose = document.getElementById('levelUpClose');
+  const badgeOverlay = document.getElementById('badgeOverlay');
+  const badgeIcon = document.getElementById('badgeIcon');
+  const badgeDesc = document.getElementById('badgeDesc');
+  const badgeClose = document.getElementById('badgeClose');
+  const overlayQueue = [];
+  let overlayShowing = false;
+  function processQueue(){
+    if(overlayShowing || overlayQueue.length===0) return;
+    const item = overlayQueue.shift();
+    overlayShowing = true;
+    item();
+  }
+  function showLevelUp(oldLv, newLv){
+    overlayQueue.push(()=>{
+      levelUpOld.textContent = `${oldLv.emoji} ${oldLv.title}`;
+      levelUpNew.textContent = `${newLv.emoji} ${newLv.title}`;
+      levelUpDesc.textContent = '感覺越來越像老闆娘了~';
+      levelUpOverlay.classList.add('show');
+      playLevelUp();
+    });
+    processQueue();
+  }
+  function showBadge(b){
+    overlayQueue.push(()=>{
+      badgeIcon.textContent = b.icon;
+      badgeDesc.textContent = `【${b.name}】${b.desc}`;
+      badgeOverlay.classList.add('show');
+      playSuccess();
+    });
+    processQueue();
+  }
+  levelUpClose.addEventListener('click',()=>{
+    levelUpOverlay.classList.remove('show');
+    overlayShowing = false;
+    processQueue();
+  });
+  badgeClose.addEventListener('click',()=>{
+    badgeOverlay.classList.remove('show');
+    overlayShowing = false;
+    processQueue();
+  });
+
+  renderLevel();
+  updateCombo();
+
+  // ============ 分頁 ============
+  const tabCheckout=document.getElementById('tabCheckout');
+  const tabTarget=document.getElementById('tabTarget');
+  const checkoutModeEl=document.getElementById('checkoutMode');
+  const targetModeEl=document.getElementById('targetMode');
+  tabCheckout.addEventListener('click',()=>switchMode('checkout'));
+  tabTarget.addEventListener('click',()=>switchMode('target'));
+  function switchMode(m){
+    if(m==='checkout'){
+      tabCheckout.classList.add('active'); tabTarget.classList.remove('active');
+      checkoutModeEl.classList.remove('hidden'); targetModeEl.classList.add('hidden');
+      if(!currentCustomer) newCustomer();
+      else if(patienceTimer===null) startPatience();
+    } else {
+      tabTarget.classList.add('active'); tabCheckout.classList.remove('active');
+      targetModeEl.classList.remove('hidden'); checkoutModeEl.classList.add('hidden');
+      stopPatience();
+    }
+  }
+
+  // ============ 通用拖曳 ============
+  function bindDrag(sourceNode, d, dropZone, onDrop){
+    sourceNode.addEventListener('pointerdown',(e)=>{
+      e.preventDefault(); getCtx();
+      const ghost=makePieceNode(d.v,d.type);
+      if(d.type==='coin'){
+        const s=COIN_SIZE[d.v]; ghost.style.width=s+'px'; ghost.style.height=s+'px';
+      }
+      ghost.classList.add('drag-ghost');
+      document.body.appendChild(ghost);
+      moveGhost(ghost,e.clientX,e.clientY);
+      let over=false;
+      function onMove(ev){
+        moveGhost(ghost,ev.clientX,ev.clientY);
+        const r=dropZone.getBoundingClientRect();
+        over = ev.clientX>=r.left && ev.clientX<=r.right && ev.clientY>=r.top && ev.clientY<=r.bottom;
+        dropZone.classList.toggle('dragover',over);
+      }
+      function onUp(){
+        document.removeEventListener('pointermove',onMove);
+        document.removeEventListener('pointerup',onUp);
+        dropZone.classList.remove('dragover');
+        ghost.remove();
+        if(over){ onDrop(d); playPieceSound(d.type); }
+      }
+      document.addEventListener('pointermove',onMove);
+      document.addEventListener('pointerup',onUp);
+    });
+  }
+  function moveGhost(g,x,y){ g.style.left=x+'px'; g.style.top=y+'px'; }
+
+  function pushToStack(zone, hintEl, stack, d, onRemove){
+    if(hintEl) hintEl.style.display='none';
+    const node=makePieceNode(d.v,d.type);
+    if(d.type==='coin'){
+      const s=COIN_SIZE[d.v]; node.style.width=s+'px'; node.style.height=s+'px';
+    }
+    node.classList.add('stack-piece');
+    const idx=stack.length;
+    const rot=(Math.random()*20-10).toFixed(1);
+    const dx=(Math.random()*40-20).toFixed(1);
+    const step=d.type==='bill'?6:4;
+    node.style.bottom=(14+idx*step)+'px';
+    node.style.transform=`translateX(calc(-50% + ${dx}px)) rotate(${rot}deg)`;
+    node.style.zIndex=idx+1;
+    const entry={v:d.v,el:node,type:d.type};
+    node.addEventListener('click',()=>{
+      playPieceSound(d.type);
+      entry.el.remove();
+      const i=stack.indexOf(entry);
+      if(i>=0) stack.splice(i,1);
+      if(stack.length===0 && hintEl) hintEl.style.display='flex';
+      if(onRemove) onRemove();
+    });
+    zone.appendChild(node);
+    stack.push(entry);
+  }
+
+  // ============ 商品 ============
+  const PRODUCTS=[
+    {emoji:'🍎',name:'蘋果',price:25},{emoji:'🍌',name:'香蕉',price:18},
+    {emoji:'🥛',name:'鮮乳',price:65},{emoji:'🍞',name:'吐司',price:45},
+    {emoji:'🥚',name:'雞蛋',price:85},{emoji:'🧀',name:'起司',price:120},
+    {emoji:'🍫',name:'巧克力',price:35},{emoji:'🍪',name:'餅乾',price:55},
+    {emoji:'🥤',name:'汽水',price:30},{emoji:'🍜',name:'泡麵',price:28},
+    {emoji:'🍿',name:'洋芋片',price:45},{emoji:'🥫',name:'罐頭',price:48},
+    {emoji:'🍩',name:'甜甜圈',price:40},{emoji:'🍦',name:'冰淇淋',price:75},
+    {emoji:'☕',name:'咖啡',price:60},{emoji:'🧴',name:'洗髮精',price:189},
+    {emoji:'🧻',name:'衛生紙',price:95},{emoji:'🍚',name:'白米',price:145},
+    {emoji:'🌭',name:'熱狗',price:42},{emoji:'🥗',name:'沙拉',price:88},
+    {emoji:'🧃',name:'果汁',price:35},{emoji:'🍮',name:'布丁',price:22},
+  ];
+
+  // ============ 客人個性 ============
+  const PERSONALITIES = {
+    granny: {
+      type:'老奶奶',
+      avatars:['👵'],
+      patience: 120,  // 秒
+      payStyle: 'coins',
+      greetings: ['啊~老闆,幫我算算~','小姐,麻煩妳囉~','齁,又來麻煩妳~'],
+      itemRange: [3,5],
+    },
+    officeworker: {
+      type:'上班族',
+      avatars:['🧑‍💼','👨‍💼','👩‍💼'],
+      patience: 45,
+      payStyle: 'bigbills',
+      greetings: ['快!我趕時間','麻煩快一點','來,結帳'],
+      itemRange: [2,4],
+    },
+    child: {
+      type:'小朋友',
+      avatars:['👧','👦'],
+      patience: 80,
+      payStyle: 'small',
+      greetings: ['老闆,這個多少錢~','嘿嘿,結帳!','阿姨~我要買這個'],
+      itemRange: [1,3],
+    },
+    tourist: {
+      type:'觀光客',
+      avatars:['🧳','🧕','👱‍♀️'],
+      patience: 70,
+      payStyle: 'round',
+      greetings: ['不好意思,結帳~','麻煩你~','Hello~ 這些謝謝'],
+      itemRange: [3,6],
+    },
+    regular: {
+      type:'常客',
+      avatars:['👩','👨','🧔','🧑'],
+      patience: 65,
+      payStyle: 'normal',
+      greetings: ['老闆好~','老樣子,結帳~','嗨~麻煩你'],
+      itemRange: [3,5],
+    },
+    grandpa: {
+      type:'老爺爺',
+      avatars:['👴','🧓'],
+      patience: 100,
+      payStyle: 'coins',
+      greetings: ['小姐,結帳','麻煩妳~','啊,多少錢啊?'],
+      itemRange: [2,4],
+    },
+  };
+
+  // ============ 隨機事件 ============
+  const EVENTS = [
+    {id:'none', chance:0.55, name:''},
+    {id:'coupon10', chance:0.10, name:'9折券', discount:0.1, badge:'🎫 使用 9 折券'},
+    {id:'coupon5', chance:0.10, name:'95折券', discount:0.05, badge:'🎫 使用 95 折券'},
+    {id:'member', chance:0.08, name:'會員85折', discount:0.15, badge:'💳 會員 85 折'},
+    {id:'tip', chance:0.10, name:'不用找了', badge:'💰 客人說「不用找了」'},
+    {id:'roundup', chance:0.07, name:'湊整數', badge:'✨ 客人湊整數付款'},
+  ];
+  function rollEvent(){
+    const r = Math.random();
+    let cum = 0;
+    for(const e of EVENTS){
+      cum += e.chance;
+      if(r <= cum) return e;
+    }
+    return EVENTS[0];
+  }
+
+  // ============ 客人結帳 ============
+  const custAvatar=document.getElementById('custAvatar');
+  const moodEmoji=document.getElementById('moodEmoji');
+  const custType=document.getElementById('custType');
+  const custRequest=document.getElementById('custRequest');
+  const patienceFill=document.getElementById('patienceFill');
+  const eventBadge=document.getElementById('eventBadge');
+  const basket=document.getElementById('basket');
+  const posLines=document.getElementById('posLines');
+  const posTotal=document.getElementById('posTotal');
+  const scanCountEl=document.getElementById('scanCount');
+  const scanTotalEl=document.getElementById('scanTotal');
+  const finishScanBtn=document.getElementById('finishScanBtn');
+  const skipCustomerBtn=document.getElementById('skipCustomerBtn');
+  const stageScan=document.getElementById('stageScan');
+  const stageCount=document.getElementById('stageCount');
+  const stageChange=document.getElementById('stageChange');
+  const stage1El=document.getElementById('stage1');
+  const stage2El=document.getElementById('stage2');
+  const stage3El=document.getElementById('stage3');
+  const stage1Lbl=document.getElementById('stage1Lbl');
+  const stage2Lbl=document.getElementById('stage2Lbl');
+  const stage3Lbl=document.getElementById('stage3Lbl');
+  const stageLine1=document.getElementById('stageLine1');
+  const stageLine2=document.getElementById('stageLine2');
+  const pileZone=document.getElementById('pileZone');
+  const countedNumEl=document.getElementById('countedNum');
+  const totalNumEl=document.getElementById('totalNum');
+  const calcDisplay=document.getElementById('calcDisplay');
+  const jellyKeys=document.querySelectorAll('.jelly-key');
+  const feedbackCheckout=document.getElementById('feedbackCheckout');
+  const confirmCountBtn=document.getElementById('confirmCountBtn');
+  const backToScanBtn=document.getElementById('backToScanBtn');
+  const changeAmountEl=document.getElementById('changeAmount');
+  const paidShown=document.getElementById('paidShown');
+  const priceShown=document.getElementById('priceShown');
+  const walletChange=document.getElementById('walletChange');
+  const changeZone=document.getElementById('changeZone');
+  const changeEmptyHint=document.getElementById('changeEmptyHint');
+  const changeTotalEl=document.getElementById('changeTotal');
+  const changeBreakdown=document.getElementById('changeBreakdown');
+  const clearChangeBtn=document.getElementById('clearChangeBtn');
+  const confirmChangeBtn=document.getElementById('confirmChangeBtn');
+  const giveExactBtn=document.getElementById('giveExactBtn');
+  const acceptTipBtn=document.getElementById('acceptTipBtn');
+
+  let currentCustomer=null;
+  let scannedCount=0, runningTotal=0;
+  let pilePieces=[], calcInput='', changeStack=[];
+  let patience=100, patienceTimer=null, patienceInterval=null;
+
+  DENOMS.forEach(d=>{
+    const wrap=document.createElement('div');
+    wrap.className='wallet-item-wrap';
+    const node=makePieceNode(d.v,d.type);
+    wrap.appendChild(node);
+    const h=document.createElement('div');
+    h.className='hint'; h.textContent='$'+d.v;
+    wrap.appendChild(h);
+    walletChange.appendChild(wrap);
+    bindDrag(node,d,changeZone,(d)=>{
+      pushToStack(changeZone,changeEmptyHint,changeStack,d,updateChangeTotal);
+      updateChangeTotal();
+    });
+  });
+
+  function newCustomer(){
+    // 選個性
+    const keys = Object.keys(PERSONALITIES);
+    const pKey = keys[Math.floor(Math.random()*keys.length)];
+    const p = PERSONALITIES[pKey];
+    const avatar = p.avatars[Math.floor(Math.random()*p.avatars.length)];
+    const greeting = p.greetings[Math.floor(Math.random()*p.greetings.length)];
+    const [min,max] = p.itemRange;
+    const count = min + Math.floor(Math.random()*(max-min+1));
+
+    // 抽商品
+    const items=[];
+    const idxs = new Set();
+    while(items.length < count){
+      const idx = Math.floor(Math.random()*PRODUCTS.length);
+      if(idxs.has(idx) && Math.random()<0.7) continue;
+      idxs.add(idx);
+      items.push({...PRODUCTS[idx], scanned:false, id:'p'+items.length});
+    }
+    const priceSum = items.reduce((a,b)=>a+b.price,0);
+
+    // 抽事件
+    const event = rollEvent();
+    let finalPrice = priceSum;
+    if(event.discount){
+      finalPrice = Math.round(priceSum * (1 - event.discount));
+    }
+
+    // 依付款風格產生金額
+    const paid = generatePayment(finalPrice, p.payStyle, event.id);
+    const paidPieces = partition(paid, p.payStyle);
+    const actualPaid = paidPieces.reduce((a,b)=>a+b,0);
+
+    currentCustomer = {
+      personality: pKey, personalityCfg: p,
+      avatar, greeting,
+      items, priceSum, finalPrice,
+      paid: actualPaid, paidPieces,
+      event,
+      startTime: Date.now(),
+      finalPatience: null,
+    };
+
+    // 更新 UI
+    custAvatar.innerHTML = avatar + `<div class="mood-emoji" id="moodEmoji">😊</div>`;
+    // moodEmoji 重新綁定
+    // 因為 innerHTML 覆寫了,重抓
+    // 但避免 breaking references, 用 querySelector
+    custAvatar.classList.remove('happy','angry');
+    custType.textContent = p.type;
+    custRequest.textContent = greeting;
+
+    // 事件標籤
+    if(event.id === 'none'){
+      eventBadge.classList.add('hidden');
+    } else {
+      eventBadge.classList.remove('hidden');
+      eventBadge.classList.remove('tip');
+      if(event.id === 'tip') eventBadge.classList.add('tip');
+      let extra = '';
+      if(event.discount){
+        extra = ` · 原價 NT$${fmt(priceSum)} → NT$${fmt(finalPrice)}`;
+      } else if(event.id === 'tip'){
+        extra = ' · 找零時可以「收下小費」';
+      } else if(event.id === 'roundup'){
+        extra = ' · 客人剛好湊整數';
+      }
+      eventBadge.textContent = event.badge + extra;
+    }
+
+    scannedCount=0; runningTotal=0;
+    renderBasket();
+    renderPOS();
+    finishScanBtn.disabled=true;
+    calcInput=''; calcDisplay.textContent='0';
+    feedbackCheckout.className='feedback'; feedbackCheckout.textContent='';
+    clearChangeStack();
+    setStage(1);
+    acceptTipBtn.classList.add('hidden');
+
+    // 啟動耐心計時
+    patience = 100;
+    updatePatienceUI();
+    startPatience();
+  }
+
+  function generatePayment(price, style, eventId){
+    if(eventId === 'roundup'){
+      // 剛好整數(付到剛好或差1元)
+      return price;
+    }
+    let candidates;
+    if(style === 'bigbills'){
+      candidates = [
+        price < 500 ? 500 : price < 1000 ? 1000 : Math.ceil(price/1000)*1000,
+        Math.ceil(price/500)*500,
+        Math.ceil(price/1000)*1000,
+      ];
+    } else if(style === 'coins'){
+      // 硬幣為主,一定湊到接近整百
+      candidates = [
+        Math.ceil(price/100)*100,
+        Math.ceil(price/50)*50,
+      ];
+    } else if(style === 'small'){
+      // 小面額
+      candidates = [
+        Math.ceil(price/100)*100,
+        Math.ceil(price/50)*50,
+      ];
+    } else if(style === 'round'){
+      candidates = [
+        Math.ceil(price/500)*500,
+        Math.ceil(price/1000)*1000,
+      ];
+    } else {
+      candidates = [
+        Math.ceil(price/100)*100,
+        Math.ceil(price/100)*100 + 100,
+        Math.ceil(price/500)*500,
+      ];
+    }
+    let p = candidates[Math.floor(Math.random()*candidates.length)];
+    if(p <= price) p = price + 100;
+    return p;
+  }
+
+  function partition(amount, style){
+    // 依 style 決定要怎麼拆
+    // coins:多硬幣
+    // bigbills:大鈔為主
+    // 其他:貪心
+    let denoms;
+    if(style === 'coins'){
+      denoms = [100,50,10,5,1]; // 不用 1000/500 大鈔
+    } else if(style === 'bigbills'){
+      denoms = [1000,500,100,50,10,5,1];
+    } else {
+      denoms = [1000,500,100,50,10,5,1];
+    }
+    let pieces=[]; let rem=amount;
+    for(const d of denoms){
+      while(rem >= d){ pieces.push(d); rem -= d; }
+    }
+    if(rem > 0){
+      // 如果因為 coins style 沒放到餘數,補進去
+      const backup=[100,50,10,5,1];
+      for(const d of backup){
+        while(rem >= d){ pieces.push(d); rem -= d; }
+      }
+    }
+    // 拆張數
+    const splitMap = {
+      1000: [500,500], 500: [100,100,100,100,100],
+      100: [50,50], 50: [10,10,10,10,10],
+      10: [5,5], 5: [1,1,1,1,1],
+    };
+    let guard=0;
+    while(pieces.length < 3 && guard++<10){
+      let maxIdx=-1, maxVal=0;
+      for(let i=0;i<pieces.length;i++){
+        if(pieces[i]>maxVal){ maxVal=pieces[i]; maxIdx=i; }
+      }
+      if(maxIdx<0 || !splitMap[maxVal]) break;
+      pieces.splice(maxIdx,1);
+      pieces.push(...splitMap[maxVal]);
+    }
+    // 老奶奶/老爺爺特別:拆更多硬幣
+    if(style === 'coins'){
+      guard = 0;
+      while(pieces.length < 6 && guard++ < 8){
+        let maxIdx=-1, maxVal=0;
+        for(let i=0;i<pieces.length;i++){
+          if(pieces[i]>maxVal && pieces[i]>1){ maxVal=pieces[i]; maxIdx=i; }
+        }
+        if(maxIdx<0 || !splitMap[maxVal]) break;
+        pieces.splice(maxIdx,1);
+        pieces.push(...splitMap[maxVal]);
+      }
+    }
+    // 太多就合併
+    const combos=[
+      {from:500,count:2,to:1000},{from:100,count:5,to:500},
+      {from:50,count:2,to:100},{from:10,count:5,to:50},
+      {from:5,count:2,to:10},{from:1,count:5,to:5},
+    ];
+    guard=0;
+    while(pieces.length > 10 && guard++<20){
+      let combined=false;
+      for(const c of combos){
+        const idxs=[];
+        for(let i=0;i<pieces.length && idxs.length<c.count;i++){
+          if(pieces[i]===c.from) idxs.push(i);
+        }
+        if(idxs.length===c.count){
+          idxs.sort((a,b)=>b-a).forEach(i=>pieces.splice(i,1));
+          pieces.push(c.to);
+          combined=true; break;
+        }
+      }
+      if(!combined) break;
+    }
+    for(let i=pieces.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [pieces[i],pieces[j]]=[pieces[j],pieces[i]];
+    }
+    return pieces;
+  }
+
+  // ---- Patience ----
+  function startPatience(){
+    stopPatience();
+    const total = currentCustomer.personalityCfg.patience; // 秒
+    const tickMs = 100;
+    const decPerTick = 100 / (total * (1000/tickMs));
+    patienceInterval = setInterval(()=>{
+      patience -= decPerTick;
+      if(patience <= 0){
+        patience = 0;
+        updatePatienceUI();
+        stopPatience();
+        onCustomerLeft();
+      } else {
+        updatePatienceUI();
+      }
+    }, tickMs);
+  }
+  function stopPatience(){
+    if(patienceInterval){ clearInterval(patienceInterval); patienceInterval=null; }
+  }
+  function updatePatienceUI(){
+    patienceFill.style.width = patience + '%';
+    patienceFill.classList.remove('medium','low','critical');
+    const me = custAvatar.querySelector('.mood-emoji');
+    if(patience > 60){
+      if(me) me.textContent = '😊';
+      custAvatar.classList.remove('angry'); custAvatar.classList.add('happy');
+    } else if(patience > 35){
+      patienceFill.classList.add('medium');
+      if(me) me.textContent = '🙂';
+      custAvatar.classList.remove('happy','angry');
+    } else if(patience > 15){
+      patienceFill.classList.add('low');
+      if(me) me.textContent = '😐';
+      custAvatar.classList.remove('happy','angry');
+    } else {
+      patienceFill.classList.add('critical');
+      if(me) me.textContent = '😠';
+      custAvatar.classList.remove('happy'); custAvatar.classList.add('angry');
+    }
+  }
+  function onCustomerLeft(){
+    combo = 0; updateCombo();
+    playAngry();
+    showFbCheckout(false, `😤 客人受不了走了!Combo 歸零`);
+    setTimeout(newCustomer, 1800);
+  }
+
+  function renderBasket(){
+    basket.innerHTML='';
+    currentCustomer.items.forEach((item, idx)=>{
+      const el=document.createElement('div');
+      el.className='product';
+      el.dataset.idx=idx;
+      el.innerHTML=`
+        <span class="emoji">${item.emoji}</span>
+        <div class="pname">${item.name}</div>
+        <div class="pprice">NT$${item.price}</div>
+        <div class="barcode">${barcodeSVG()}<div class="barnum">${barcodeNumber()}</div></div>
+      `;
+      el.addEventListener('click',()=>{
+        if(item.scanned) return;
+        el.classList.add('scanning');
+        playBeep();
+        setTimeout(()=>{
+          el.classList.remove('scanning');
+          el.classList.add('scanned');
+          item.scanned=true;
+          scannedCount++;
+          runningTotal += item.price;
+          renderPOS();
+          if(scannedCount === currentCustomer.items.length){
+            finishScanBtn.disabled=false;
+          }
+        }, 400);
+      });
+      basket.appendChild(el);
+    });
+  }
+
+  function renderPOS(){
+    scanCountEl.textContent = scannedCount;
+    scanTotalEl.textContent = currentCustomer.items.length;
+    const shown = scannedCount === currentCustomer.items.length ? currentCustomer.finalPrice : runningTotal;
+    posTotal.textContent = fmt(shown);
+    const scanned = currentCustomer.items.filter(i=>i.scanned);
+    if(scanned.length === 0){
+      posLines.innerHTML = '<div class="empty">尚未掃描商品</div>';
+      return;
+    }
+    let html = scanned.map(item =>
+      `<div class="line"><span class="name">${item.emoji} ${item.name}</span><span class="p">$${item.price}</span></div>`
+    ).join('');
+    // 全掃完 + 有折扣 → 顯示折扣行
+    if(scannedCount === currentCustomer.items.length){
+      const ev = currentCustomer.event;
+      if(ev.discount){
+        const discAmount = currentCustomer.priceSum - currentCustomer.finalPrice;
+        html += `<div class="line" style="border-top:1px dashed rgba(240,255,196,.3); margin-top:4px; padding-top:4px;"><span class="name">小計</span><span class="p">$${fmt(currentCustomer.priceSum)}</span></div>`;
+        html += `<div class="line discount"><span class="name">${ev.name}</span><span class="p">-$${fmt(discAmount)}</span></div>`;
+      }
+    }
+    posLines.innerHTML = html;
+    posLines.scrollTop = posLines.scrollHeight;
+  }
+
+  finishScanBtn.addEventListener('click',()=>{
+    playSuccess();
+    renderPile(currentCustomer.paidPieces);
+    setStage(2);
+  });
+  skipCustomerBtn.addEventListener('click',()=>{
+    combo=0; updateCombo();
+    newCustomer();
+  });
+  backToScanBtn.addEventListener('click',()=>setStage(1));
+
+  function renderPile(pieces){
+    Array.from(pileZone.querySelectorAll('.pile-piece')).forEach(n=>n.remove());
+    pilePieces=[];
+    const sorted = [...pieces].sort((a,b)=>b-a);
+    sorted.forEach((v)=>{
+      const type = v>=100 ? 'bill' : 'coin';
+      const node=makePieceNode(v,type);
+      if(type==='coin'){
+        const s=COIN_SIZE[v]; node.style.width=s+'px'; node.style.height=s+'px';
+      }
+      node.classList.add('pile-piece');
+      const rot=(Math.random()*6-3).toFixed(1);
+      node.style.transform=`rotate(${rot}deg)`;
+      const entry={node,counted:false,v,type};
+      node.addEventListener('click',()=>{
+        entry.counted=!entry.counted;
+        node.classList.toggle('counted',entry.counted);
+        playPieceSound(type);
+        updateCountBadge();
+      });
+      pileZone.appendChild(node);
+      pilePieces.push(entry);
+    });
+    updateCountBadge();
+  }
+  function updateCountBadge(){
+    countedNumEl.textContent = pilePieces.filter(p=>p.counted).length;
+    totalNumEl.textContent = pilePieces.length;
+  }
+
+  function setStage(n){
+    [stage1El,stage2El,stage3El].forEach(s=>s.classList.remove('active','done'));
+    [stage1Lbl,stage2Lbl,stage3Lbl].forEach(l=>l.classList.remove('active'));
+    stageLine1.classList.remove('done'); stageLine2.classList.remove('done');
+    stageScan.classList.add('hidden'); stageCount.classList.add('hidden'); stageChange.classList.add('hidden');
+    if(n===1){
+      stage1El.classList.add('active'); stage1Lbl.classList.add('active');
+      stageScan.classList.remove('hidden');
+    } else if(n===2){
+      stage1El.classList.add('done'); stageLine1.classList.add('done');
+      stage2El.classList.add('active'); stage2Lbl.classList.add('active');
+      stageCount.classList.remove('hidden');
+    } else {
+      stage1El.classList.add('done'); stageLine1.classList.add('done');
+      stage2El.classList.add('done'); stageLine2.classList.add('done');
+      stage3El.classList.add('active'); stage3Lbl.classList.add('active');
+      stageChange.classList.remove('hidden');
+      const change = currentCustomer.paid - currentCustomer.finalPrice;
+      changeAmountEl.textContent = fmt(change);
+      paidShown.textContent = 'NT$'+fmt(currentCustomer.paid);
+      priceShown.textContent = 'NT$'+fmt(currentCustomer.finalPrice);
+      // 小費事件顯示按鈕
+      if(currentCustomer.event.id === 'tip'){
+        acceptTipBtn.classList.remove('hidden');
+      } else {
+        acceptTipBtn.classList.add('hidden');
+      }
+    }
+    feedbackCheckout.className='feedback'; feedbackCheckout.textContent='';
+  }
+
+  jellyKeys.forEach(key=>{
+    key.addEventListener('click',()=>{
+      playJellyKey();
+      key.classList.add('pressed');
+      setTimeout(()=>key.classList.remove('pressed'),80);
+      const k=key.dataset.k;
+      if(k==='clear') calcInput='';
+      else if(k==='back') calcInput=calcInput.slice(0,-1);
+      else { if(calcInput.length<6) calcInput+=k; }
+      calcDisplay.textContent = calcInput==='' ? '0' : fmt(parseInt(calcInput,10));
+    });
+  });
+
+  function showFbCheckout(good,msg){
+    feedbackCheckout.className='feedback show '+(good?'good':'bad');
+    feedbackCheckout.textContent=msg;
+  }
+  function showFbInfo(msg){
+    feedbackCheckout.className='feedback show info';
+    feedbackCheckout.textContent=msg;
+  }
+
+  // 完成一位客人 → 給 XP
+  function completeCustomer(mode){
+    stopPatience();
+    // XP 計算
+    let base = 20;
+    let mult = 1;
+    if(patience > 80){ mult = 2; base += 10; state.fastServe += 1; }
+    else if(patience > 60){ mult = 1.5; base += 5; }
+    else if(patience > 30){ mult = 1; }
+    else { mult = 0.5; }
+    // combo
+    let comboBonus = 0;
+    if(mode === 'perfect' || mode === 'tip'){
+      combo += 1;
+      if(combo >= 2) comboBonus = combo * 5;
+      if(combo > state.bestCombo) state.bestCombo = combo;
+    } else if(mode === 'break'){
+      combo = 0;
+    }
+    updateCombo();
+    const xp = Math.round(base * mult) + comboBonus;
+    state.totalServed += 1;
+    if(currentCustomer.event.id === 'tip' && mode === 'tip') state.tipReceived += 1;
+    if(currentCustomer.event.discount) state.couponsUsed += 1;
+    saveState();
+    // 找到 customer card 位置給 XP 動畫
+    const r = document.querySelector('.customer-card').getBoundingClientRect();
+    addXP(xp, r.left + r.width/2, r.top + r.height/2);
+  }
+
+  confirmCountBtn.addEventListener('click',()=>{
+    const ans = calcInput==='' ? NaN : parseInt(calcInput,10);
+    if(isNaN(ans)){ playError(); showFbCheckout(false,'先用計算機打出你算的金額喔'); return; }
+    if(ans === currentCustomer.paid){
+      playSuccess();
+      const change = currentCustomer.paid - currentCustomer.finalPrice;
+      if(change === 0){
+        showFbCheckout(true,`✅ 剛好 NT$${fmt(currentCustomer.paid)},不用找零!`);
+        completeCustomer('perfect');
+        setTimeout(()=>{ playHappy(); newCustomer(); }, 1600);
+      } else {
+        showFbCheckout(true,`✅ 沒錯!客人給了 NT$${fmt(currentCustomer.paid)},請找 NT$${fmt(change)}`);
+        setTimeout(()=>setStage(3), 1000);
+      }
+    } else {
+      combo = 0; updateCombo();
+      playError();
+      showFbCheckout(false,`不對喔,再算算看(差 NT$${fmt(Math.abs(ans-currentCustomer.paid))})`);
+    }
+  });
+
+  function currentChangeTotal(){ return changeStack.reduce((s,x)=>s+x.v,0); }
+  function updateChangeTotal(){
+    const cur=currentChangeTotal();
+    changeTotalEl.textContent=fmt(cur);
+    const need = currentCustomer ? currentCustomer.paid - currentCustomer.finalPrice : 0;
+    const counts={};
+    changeStack.forEach(s=>counts[s.v]=(counts[s.v]||0)+1);
+    changeBreakdown.innerHTML='';
+    Object.keys(counts).sort((a,b)=>b-a).forEach(v=>{
+      const chip=document.createElement('div');
+      chip.className='chip'; chip.textContent=`NT$${v} × ${counts[v]}`;
+      changeBreakdown.appendChild(chip);
+    });
+    changeTotalEl.style.color = cur > need ? 'var(--bad)' : 'var(--coral-deep)';
+  }
+  function clearChangeStack(){
+    changeStack.forEach(s=>s.el.remove());
+    changeStack=[];
+    changeEmptyHint.style.display='flex';
+    updateChangeTotal();
+  }
+  clearChangeBtn.addEventListener('click',clearChangeStack);
+
+  giveExactBtn.addEventListener('click',()=>{
+    if(!currentCustomer) return;
+    clearChangeStack();
+    let need = currentCustomer.paid - currentCustomer.finalPrice;
+    const denoms=[1000,500,100,50,10,5,1];
+    for(const d of denoms){
+      while(need >= d){
+        const type = d>=100 ? 'bill' : 'coin';
+        pushToStack(changeZone,changeEmptyHint,changeStack,{v:d,type},updateChangeTotal);
+        need -= d;
+        playPieceSound(type);
+      }
+    }
+    updateChangeTotal();
+  });
+
+  acceptTipBtn.addEventListener('click',()=>{
+    if(!currentCustomer) return;
+    const tipAmount = currentCustomer.paid - currentCustomer.finalPrice;
+    playHappy();
+    showFbCheckout(true, `💰 收下 NT$${fmt(tipAmount)} 小費,謝謝客人!`);
+    completeCustomer('tip');
+    setTimeout(newCustomer, 1800);
+  });
+
+  confirmChangeBtn.addEventListener('click',()=>{
+    if(!currentCustomer) return;
+    const cur=currentChangeTotal();
+    const need = currentCustomer.paid - currentCustomer.finalPrice;
+    if(cur === need){
+      playHappy();
+      showFbCheckout(true,`🎉 找零正確!客人開心地離開,謝謝老闆~`);
+      completeCustomer('perfect');
+      setTimeout(newCustomer, 1800);
+    } else if(cur < need){
+      playError();
+      showFbCheckout(false,`還差 NT$${fmt(need-cur)},客人在等喔`);
+    } else {
+      playError();
+      showFbCheckout(false,`太多了!多找了 NT$${fmt(cur-need)}`);
+    }
+  });
+
+  // ============ 湊金額練習 ============
+  const walletEl=document.getElementById('wallet');
+  const stackzone=document.getElementById('stackzone');
+  const emptyHint=document.getElementById('emptyHint');
+  const curTotalEl=document.getElementById('curTotal');
+  const breakdownEl=document.getElementById('breakdown');
+  const targetAmountEl=document.getElementById('targetAmount');
+  const progressCur=document.getElementById('progressCur');
+  const progressRemain=document.getElementById('progressRemain');
+  const feedbackTarget=document.getElementById('feedbackTarget');
+  const checkBtn=document.getElementById('checkBtn');
+  const skipBtn=document.getElementById('skipBtn');
+  const clearBtn=document.getElementById('clearBtn');
+  let target=0; let stack=[];
+
+  DENOMS.forEach(d=>{
+    const wrap=document.createElement('div');
+    wrap.className='wallet-item-wrap';
+    const node=makePieceNode(d.v,d.type);
+    wrap.appendChild(node);
+    const h=document.createElement('div');
+    h.className='hint'; h.textContent='$'+d.v;
+    wrap.appendChild(h);
+    walletEl.appendChild(wrap);
+    bindDrag(node,d,stackzone,(d)=>{
+      pushToStack(stackzone,emptyHint,stack,d,updateTargetTotals);
+      updateTargetTotals();
+    });
+  });
+  function updateTargetTotals(){
+    const cur=stack.reduce((s,x)=>s+x.v,0);
+    curTotalEl.textContent=fmt(cur);
+    progressCur.textContent=fmt(cur);
+    const remain = target - cur;
+    progressRemain.textContent = remain>0 ? `還差 ${fmt(remain)}` : remain===0 ? '剛剛好!' : `多了 ${fmt(-remain)}`;
+    const counts={};
+    stack.forEach(s=>counts[s.v]=(counts[s.v]||0)+1);
+    breakdownEl.innerHTML='';
+    Object.keys(counts).sort((a,b)=>b-a).forEach(v=>{
+      const chip=document.createElement('div');
+      chip.className='chip'; chip.textContent=`NT$${v} × ${counts[v]}`;
+      breakdownEl.appendChild(chip);
+    });
+  }
+  function newTarget(){
+    target = 100 + Math.floor(Math.random()*580)*5;
+    targetAmountEl.textContent=fmt(target);
+    feedbackTarget.className='feedback'; feedbackTarget.textContent='';
+    stack.forEach(s=>s.el.remove()); stack=[];
+    emptyHint.style.display='flex';
+    updateTargetTotals();
+  }
+  checkBtn.addEventListener('click',()=>{
+    const cur=stack.reduce((s,x)=>s+x.v,0);
+    if(cur===target){
+      playSuccess();
+      addXP(10);
+      feedbackTarget.className='feedback show good';
+      feedbackTarget.textContent=`✅ 答對了!剛好 NT$${fmt(target)} (+10 XP)`;
+      setTimeout(newTarget,1200);
+    } else if(cur>target){
+      playError();
+      feedbackTarget.className='feedback show bad';
+      feedbackTarget.textContent=`太多了 ${fmt(cur-target)}`;
+    } else {
+      playError();
+      feedbackTarget.className='feedback show bad';
+      feedbackTarget.textContent=`還差 NT$${fmt(target-cur)}`;
+    }
+  });
+  skipBtn.addEventListener('click',newTarget);
+  clearBtn.addEventListener('click',()=>{
+    stack.forEach(s=>s.el.remove()); stack=[];
+    emptyHint.style.display='flex';
+    updateTargetTotals();
+  });
+
+  // 頁面隱藏時暫停計時
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden) stopPatience();
+    else if(currentCustomer && !checkoutModeEl.classList.contains('hidden')) startPatience();
+  });
+
+  // init
+  newTarget();
+  newCustomer();
+})();
+</script>
+</body>
+</html>
