@@ -32,6 +32,45 @@
   .num{ font-family: "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
   .app{ max-width:960px; margin:0 auto; padding:16px 14px 40px; min-height:100%; }
 
+  /* ===== iPad 直式優化 ===== */
+  @media (min-width: 721px) and (max-width: 1180px){
+    .app{ max-width: 100%; padding: 20px 24px 40px; }
+    header h1{ font-size: 22px; }
+    .level-card{ min-width: 220px; padding: 10px 16px; }
+    .level-badge{ width: 42px; height: 42px; font-size: 16px; }
+    .level-title{ font-size: 14px; }
+    .customer-avatar{ width: 84px; height: 84px; font-size: 48px; }
+    .mood-emoji{ width: 30px; height: 30px; font-size: 20px; }
+    .customer-bubble .request{ font-size: 16px; }
+    .customer-type{ font-size: 12px; }
+    .patience-bar{ height: 14px; }
+    .patience-label{ font-size: 12px; }
+    .basket{
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      min-height: 380px;
+    }
+    .product{ padding: 12px 8px 6px; }
+    .product .emoji{ font-size: 42px; margin-bottom: 4px; }
+    .product .pname{ font-size: 13px; }
+    .product .pprice{ font-size: 12px; }
+    .product .barcode svg{ height: 16px; }
+    .product .barnum{ font-size: 9px; }
+    .stackzone{ height: 340px; }
+    #pileZone{ min-height: 340px; padding: 50px 16px 20px; gap: 14px 18px; }
+    .pos-screen{ min-height: 340px; }
+    .pos-lines{ font-size: 14px; }
+    .pos-footer .total{ font-size: 22px; }
+    .jelly-key{ height: 62px; font-size: 24px; }
+    .calc-display .digits{ font-size: 36px; }
+    .btn{ padding: 16px 14px; font-size: 15px; }
+    .change-target-card .amount{ font-size: 30px; }
+    .change-target-card .label{ font-size: 13px; }
+    .change-target-card .helper{ font-size: 13px; }
+    .bill{ width: 118px; height: 62px; }
+    .totalbar .cur{ font-size: 26px; }
+  }
+
   /* ===== Header ===== */
   header{
     display:flex; align-items:center; justify-content:space-between;
